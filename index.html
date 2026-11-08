@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promo Code Generator</title>
+  <style>
+    :root {
+      --bg-main: #1e1e24;
+      --bg-card: #24252a;
+      --bg-card-subtle: #2d2e35;
+      --bg-input: #191a1e;
+      --border-color: #343741;
+      --border-focus: #00d2d3;
+      --accent: #00d2d3;
+      --accent-hover: #00b4b5;
+      --accent-glow: rgba(0, 210, 211, 0.25);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --success: #10b981;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: auto;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .app-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(36,37,42,1) 0%, rgba(29,30,34,1) 100%);
+    }
+
+    .app-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .app-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent) 0%, #0984e3 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      font-size: 1.1rem;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .app-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .app-tagline {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* Main Grid Layout */
+    .app-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    @media (min-width: 820px) {
+      .app-body {
+        grid-template-columns: 380px 1fr;
+      }
+    }
+
+    /* Left Control Column */
+    .controls-panel {
+      padding: 1.75rem;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      background-color: #212226;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Checkbox list */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--bg-input);
+      cursor: pointer;
+      display: inline-grid;
+      place-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .checkbox-item input[type="checkbox"]:hover {
+      border-color: var(--accent);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked::before {
+      content: "";
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid #111827;
+      border-bottom: 2px solid #111827;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+
+    .checkbox-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .charset-preview {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .custom-symbols-box {
+      margin-top: 0.25rem;
+      padding-left: 1.8rem;
+    }
+
+    .text-input {
+      width: 100%;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.5rem 0.65rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .text-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    /* Steppers */
+    .steppers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .stepper-control {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .stepper-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .stepper-wrapper {
+      display: flex;
+      align-items: center;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      height: 38px;
+    }
+
+    .stepper-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      width: 32px;
+      height: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+
+    .stepper-btn:hover {
+      background-color: var(--bg-card-subtle);
+      color: var(--accent);
+    }
+
+    .stepper-btn:active {
+      background-color: var(--border-color);
+    }
+
+    .stepper-input {
+      flex: 1;
+      width: 100%;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.95rem;
+      font-family: var(--font-mono);
+      outline: none;
+      -moz-appearance: textfield;
+    }
+
+    .stepper-input::-webkit-outer-spin-button,
+    .stepper-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Seed Input */
+    .seed-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .seed-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .seed-info {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    /* Generate Button */
+    .generate-btn {
+      background: linear-gradient(135deg, var(--accent) 0%, #00b4b5 100%);
+      color: #111827;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 14px var(--accent-glow);
+      transition: all 0.2s ease;
+      width: 100%;
+      margin-top: 0.5rem;
+      user-select: none;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 210, 211, 0.4);
+      filter: brightness(1.05);
+    }
+
+    .generate-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    /* Right Output Column */
+    .output-panel {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background-color: var(--bg-card);
+      min-height: 480px;
+    }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.85rem;
+    }
+
+    .output-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .output-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .output-count strong {
+      color: var(--accent);
+    }
+
+    .output-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      background-color: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.45rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background-color: rgba(0, 210, 211, 0.08);
+    }
+
+    .btn-action:active {
+      transform: scale(0.97);
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 105%;
+      background-color: #2b2c33;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 50;
+      min-width: 170px;
+      overflow: hidden;
+    }
+
+    .dropdown.active .dropdown-content {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.12s;
+    }
+
+    .dropdown-item:hover {
+      background-color: rgba(0, 210, 211, 0.12);
+      color: var(--accent);
+    }
+
+    /* Results list */
+    .results-box {
+      flex: 1;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      overflow-y: auto;
+      max-height: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      user-select: text;
+    }
+
+    .code-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.65rem;
+      border-radius: var(--radius-sm);
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      transition: all 0.12s ease;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    .code-row:hover {
+      background-color: rgba(0, 210, 211, 0.05);
+      border-color: rgba(0, 210, 211, 0.2);
+    }
+
+    .code-idx {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      width: 32px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .code-text {
+      flex: 1;
+      color: #e5e7eb;
+      letter-spacing: 0.05em;
+      word-break: break-all;
+    }
+
+    .code-copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .code-copy-btn:hover {
+      color: var(--accent);
+      background-color: rgba(0, 210, 211, 0.15);
+    }
+
+    .code-copy-btn.copied {
+      color: var(--success);
+    }
+
+    /* Alert / Error messages */
+    .alert-box {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .alert-box.active {
+      display: flex;
+    }
+
+    .alert-error {
+      background-color: var(--danger-bg);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 250px;
+      color: var(--text-dim);
+      gap: 0.75rem;
+      user-select: none;
+    }
+
+    .empty-state svg {
+      opacity: 0.4;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: #111827;
+      color: var(--text-main);
+      border: 1px solid var(--accent);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 15px var(--accent-glow);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      color: var(--accent);
+    }
+
+    /* Print styling for PDF export */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0;
+      }
+      .app-container {
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+      }
+      .controls-panel, .app-header, .output-actions, .code-copy-btn, .code-idx {
+        display: none !important;
+      }
+      .output-panel, .results-box {
+        background: #fff !important;
+        border: none !important;
+        max-height: none !important;
+        padding: 0 !important;
+      }
+      .code-row {
+        background: none !important;
+        border-bottom: 1px solid #ddd !important;
+        padding: 6px 0;
+      }
+      .code-text {
+        color: #000 !important;
+        font-size: 11pt;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="app-title-group">
+        <div class="app-icon">#</div>
+        <div>
+          <h1 class="app-title">Promo Code Generator</h1>
+          <p class="app-tagline">Cryptographic &amp; Reproducible Utility</p>
+        </div>
+      </div>
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        Ready
+      </div>
+    </header>
+
+    <div class="app-body">
+      <!-- Left Configuration Panel -->
+      <aside class="controls-panel">
+        
+        <!-- Character Sets -->
+        <div>
+          <div class="section-title">Character Sets</div>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkLower" checked>
+              <div class="checkbox-label">
+                <span>Lower case</span>
+                <span class="charset-preview">a-z</span>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkUpper" checked>
+              <div class="checkbox-label">
+                <span>Upper case</span>
+                <span class="charset-preview">A-Z</span>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkNumbers" checked>
+              <div class="checkbox-label">
+                <span>Numbers</span>
+                <span class="charset-preview">0-9</span>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkSymbols">
+              <div class="checkbox-label">
+                <span>Symbols</span>
+                <span class="charset-preview">!@#...</span>
+              </div>
+            </label>
+
+            <div class="custom-symbols-box" id="symbolsBox">
+              <input type="text" id="customSymbols" class="text-input" 
+                value="&#39;&quot;!?.,:;$%&@~#()&lt;&gt;{}[]_*-+^=/|\" 
+                placeholder="Custom symbols" title="Custom symbols pool">
+            </div>
+          </div>
+        </div>
+
+        <!-- Generation Rules & Filters -->
+        <div>
+          <div class="section-title">Rules &amp; Filters</div>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkUnique">
+              <div class="checkbox-label">
+                <span>Unique characters</span>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkShuffle" checked>
+              <div class="checkbox-label">
+                <span>Shuffle character positions</span>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkAvoidAmbiguous">
+              <div class="checkbox-label">
+                <span>Avoid ambiguous (i, l, 1, I, o, 0, O)</span>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" id="chkOmitLetters">
+              <div class="checkbox-label">
+                <span>Omit specific letters</span>
+              </div>
+            </label>
+
+            <div class="custom-symbols-box" id="omitBox" style="display: none;">
+              <input type="text" id="omitLettersInput" class="text-input" value="y, z" placeholder="Letters to omit, e.g. y, z">
+            </div>
+          </div>
+        </div>
+
+        <!-- Steppers: Quantity & Length -->
+        <div>
+          <div class="section-title">Parameters</div>
+          <div class="steppers-grid">
+            <div class="stepper-control">
+              <label class="stepper-label" for="quantityInput">Quantity (1-1000)</label>
+              <div class="stepper-wrapper">
+                <button type="button" class="stepper-btn" id="btnQtyDec">&minus;</button>
+                <input type="number" id="quantityInput" class="stepper-input" value="10" min="1" max="1000">
+                <button type="button" class="stepper-btn" id="btnQtyInc">&plus;</button>
+              </div>
+            </div>
+
+            <div class="stepper-control">
+              <label class="stepper-label" for="lengthInput">Length (4-64)</label>
+              <div class="stepper-wrapper">
+                <button type="button" class="stepper-btn" id="btnLenDec">&minus;</button>
+                <input type="number" id="lengthInput" class="stepper-input" value="8" min="4" max="64">
+                <button type="button" class="stepper-btn" id="btnLenInc">&plus;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seed Input -->
+        <div class="seed-group">
+          <div class="seed-label-row">
+            <label class="stepper-label" for="seedInput">PRNG Seed (Optional)</label>
+            <span class="seed-info">Blank = Crypto Secure</span>
+          </div>
+          <input type="text" id="seedInput" class="text-input" placeholder="e.g. SUMMER2026 or leave blank">
+        </div>
+
+        <!-- Action Button -->
+        <button type="button" class="generate-btn" id="btnGenerate">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          GENERATE
+        </button>
+
+      </aside>
+
+      <!-- Right Output Display Panel -->
+      <main class="output-panel">
+        
+        <!-- Alert Box for Validation -->
+        <div class="alert-box alert-error" id="errorBox">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span id="errorMessage">Error text</span>
+        </div>
+
+        <!-- Output Header -->
+        <div class="output-header">
+          <div class="output-meta">
+            <span class="output-count"><strong id="resultsCount">0</strong> codes generated</span>
+          </div>
+          <div class="output-actions">
+            <button type="button" class="btn-action" id="btnSelectAll" title="Select and highlight all codes">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 3v18M3 9h18"/>
+              </svg>
+              Select All
+            </button>
+            <button type="button" class="btn-action" id="btnCopyAll" title="Copy all codes to clipboard">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy All
+            </button>
+
+            <!-- Export Dropdown -->
+            <div class="dropdown" id="exportDropdown">
+              <button type="button" class="btn-action" id="btnExportMenu">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                Export
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </button>
+              <div class="dropdown-content">
+                <div class="dropdown-item" id="exportCsv">
+                  📄 Export CSV (.csv)
+                </div>
+                <div class="dropdown-item" id="exportTsv">
+                  📑 Export TSV (.tsv)
+                </div>
+                <div class="dropdown-item" id="exportTxt">
+                  📝 Plain Text (.txt)
+                </div>
+                <div class="dropdown-item" id="exportSheets">
+                  📊 Google Sheets / Excel
+                </div>
+                <div class="dropdown-item" id="exportPdf">
+                  🖨️ PDF Document (.pdf)
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scrollable Results Box -->
+        <div class="results-box" id="resultsBox">
+          <div class="empty-state" id="emptyState">
+            <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+            <p>Click <strong>GENERATE</strong> to create promo codes</p>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span id="toastMessage">Copied!</span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // --- DOM Elements ---
+      const chkLower = document.getElementById('chkLower');
+      const chkUpper = document.getElementById('chkUpper');
+      const chkNumbers = document.getElementById('chkNumbers');
+      const chkSymbols = document.getElementById('chkSymbols');
+      const customSymbols = document.getElementById('customSymbols');
+      const symbolsBox = document.getElementById('symbolsBox');
+
+      const chkUnique = document.getElementById('chkUnique');
+      const chkShuffle = document.getElementById('chkShuffle');
+      const chkAvoidAmbiguous = document.getElementById('chkAvoidAmbiguous');
+      const chkOmitLetters = document.getElementById('chkOmitLetters');
+      const omitLettersInput = document.getElementById('omitLettersInput');
+      const omitBox = document.getElementById('omitBox');
+
+      const quantityInput = document.getElementById('quantityInput');
+      const btnQtyDec = document.getElementById('btnQtyDec');
+      const btnQtyInc = document.getElementById('btnQtyInc');
+
+      const lengthInput = document.getElementById('lengthInput');
+      const btnLenDec = document.getElementById('btnLenDec');
+      const btnLenInc = document.getElementById('btnLenInc');
+
+      const seedInput = document.getElementById('seedInput');
+      const btnGenerate = document.getElementById('btnGenerate');
+
+      const resultsBox = document.getElementById('resultsBox');
+      const resultsCount = document.getElementById('resultsCount');
+      const emptyState = document.getElementById('emptyState');
+      const errorBox = document.getElementById('errorBox');
+      const errorMessage = document.getElementById('errorMessage');
+
+      const btnSelectAll = document.getElementById('btnSelectAll');
+      const btnCopyAll = document.getElementById('btnCopyAll');
+      const exportDropdown = document.getElementById('exportDropdown');
+      const btnExportMenu = document.getElementById('btnExportMenu');
+      const exportCsv = document.getElementById('exportCsv');
+      const exportTsv = document.getElementById('exportTsv');
+      const exportTxt = document.getElementById('exportTxt');
+      const exportSheets = document.getElementById('exportSheets');
+      const exportPdf = document.getElementById('exportPdf');
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+
+      let currentCodes = [];
+      let toastTimer = null;
+
+      // Ambiguous character set
+      const AMBIGUOUS_CHARS = new Set(['i', 'l', '1', 'I', 'o', '0', 'O']);
+
+      // --- Stepper Controls ---
+      function setupStepper(btnDec, btnInc, input, min, max) {
+        btnDec.addEventListener('click', () => {
+          let val = parseInt(input.value, 10) || min;
+          if (val > min) input.value = val - 1;
+        });
+        btnInc.addEventListener('click', () => {
+          let val = parseInt(input.value, 10) || min;
+          if (val < max) input.value = val + 1;
+        });
+        input.addEventListener('change', () => {
+          let val = parseInt(input.value, 10);
+          if (isNaN(val) || val < min) input.value = min;
+          else if (val > max) input.value = max;
+        });
+      }
+
+      setupStepper(btnQtyDec, btnQtyInc, quantityInput, 1, 1000);
+      setupStepper(btnLenDec, btnLenInc, lengthInput, 4, 64);
+
+      // Toggle Omit Box
+      chkOmitLetters.addEventListener('change', () => {
+        omitBox.style.display = chkOmitLetters.checked ? 'block' : 'none';
+      });
+
+      // --- PRNG Seed Implementation (Mulberry32) ---
+      function cyrb53(str, seed = 0) {
+        let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+        for (let i = 0, ch; i < str.length; i++) {
+          ch = str.charCodeAt(i);
+          h1 = Math.imul(h1 ^ ch, 2654435761);
+          h2 = Math.imul(h2 ^ ch, 1597334677);
+        }
+        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+        return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+      }
+
+      function mulberry32(a) {
+        return function() {
+          let t = a += 0x6D2B79F5;
+          t = Math.imul(t ^ t >>> 15, t | 1);
+          t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      }
+
+      function getRandomNumberGenerator(seedStr) {
+        if (seedStr && seedStr.trim().length > 0) {
+          const hash = cyrb53(seedStr.trim());
+          const prng = mulberry32(hash);
+          return prng;
+        } else {
+          // Cryptographically secure fallback
+          return function() {
+            const buf = new Uint32Array(1);
+            window.crypto.getRandomValues(buf);
+            return buf[0] / (0xFFFFFFFF + 1);
+          };
+        }
+      }
+
+      // --- Error Helpers ---
+      function showError(msg) {
+        errorMessage.textContent = msg;
+        errorBox.classList.add('active');
+      }
+
+      function clearError() {
+        errorBox.classList.remove('active');
+        errorMessage.textContent = '';
+      }
+
+      // --- Character Pool Builder ---
+      function getCharacterSet() {
+        let pool = '';
+        if (chkLower.checked) pool += 'abcdefghijklmnopqrstuvwxyz';
+        if (chkUpper.checked) pool += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (chkNumbers.checked) pool += '0123456789';
+        if (chkSymbols.checked) {
+          pool += customSymbols.value;
+        }
+
+        if (pool.length === 0) {
+          showError('Please select at least one character set (e.g. Lower, Upper, Numbers, or Symbols).');
+          return null;
+        }
+
+        // De-duplicate initial set
+        let charArray = Array.from(new Set(pool.split('')));
+
+        // Filter: Avoid ambiguous characters
+        if (chkAvoidAmbiguous.checked) {
+          charArray = charArray.filter(c => !AMBIGUOUS_CHARS.has(c));
+        }
+
+        // Filter: Omit specific letters
+        if (chkOmitLetters.checked && omitLettersInput.value.trim().length > 0) {
+          const rawOmit = omitLettersInput.value.replace(/[\s,]/g, '');
+          const omitSet = new Set(rawOmit.split(''));
+          charArray = charArray.filter(c => !omitSet.has(c));
+        }
+
+        if (charArray.length === 0) {
+          showError('Filtered character set is empty. Please adjust your filters or character selections.');
+          return null;
+        }
+
+        return charArray;
+      }
+
+      // --- Generator Engine ---
+      function generatePromoCodes() {
+        clearError();
+
+        const charPool = getCharacterSet();
+        if (!charPool) return;
+
+        const qty = parseInt(quantityInput.value, 10);
+        const len = parseInt(lengthInput.value, 10);
+        const uniqueChars = chkUnique.checked;
+
+        if (uniqueChars && len > charPool.length) {
+          showError(`Cannot generate unique codes: Requested length (${len}) exceeds available distinct characters (${charPool.length}).`);
+          return;
+        }
+
+        const rng = getRandomNumberGenerator(seedInput.value);
+        const results = [];
+        const seenCodes = new Set();
+        const maxAttemptsPerCode = 200;
+
+        for (let i = 0; i < qty; i++) {
+          let code = '';
+          let attempts = 0;
+
+          do {
+            attempts++;
+            if (uniqueChars) {
+              // Sample without replacement
+              const copyPool = [...charPool];
+              const chars = [];
+              for (let k = 0; k < len; k++) {
+                const idx = Math.floor(rng() * copyPool.length);
+                chars.push(copyPool.splice(idx, 1)[0]);
+              }
+              if (chkShuffle.checked) {
+                for (let idx = chars.length - 1; idx > 0; idx--) {
+                  const j = Math.floor(rng() * (idx + 1));
+                  const temp = chars[idx];
+                  chars[idx] = chars[j];
+                  chars[j] = temp;
+                }
+              }
+              code = chars.join('');
+            } else {
+              // Sample with replacement
+              const chars = [];
+              for (let k = 0; k < len; k++) {
+                const idx = Math.floor(rng() * charPool.length);
+                chars.push(charPool[idx]);
+              }
+              if (chkShuffle.checked) {
+                for (let idx = chars.length - 1; idx > 0; idx--) {
+                  const j = Math.floor(rng() * (idx + 1));
+                  const temp = chars[idx];
+                  chars[idx] = chars[j];
+                  chars[j] = temp;
+                }
+              }
+              code = chars.join('');
+            }
+          } while (seenCodes.has(code) && attempts < maxAttemptsPerCode);
+
+          seenCodes.add(code);
+          results.push(code);
+        }
+
+        currentCodes = results;
+        renderResults();
+        showToast(`Generated ${results.length} promo codes!`);
+      }
+
+      // --- UI Render ---
+      function renderResults() {
+        resultsBox.innerHTML = '';
+        resultsCount.textContent = currentCodes.length;
+
+        if (currentCodes.length === 0) {
+          resultsBox.appendChild(emptyState);
+          return;
+        }
+
+        currentCodes.forEach((code, idx) => {
+          const row = document.createElement('div');
+          row.className = 'code-row';
+
+          const idxSpan = document.createElement('span');
+          idxSpan.className = 'code-idx';
+          idxSpan.textContent = `#${idx + 1}`;
+
+          const textSpan = document.createElement('span');
+          textSpan.className = 'code-text';
+          textSpan.textContent = code;
+
+          const copyBtn = document.createElement('button');
+          copyBtn.type = 'button';
+          copyBtn.className = 'code-copy-btn';
+          copyBtn.title = 'Copy this code';
+          copyBtn.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          `;
+
+          copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(code).then(() => {
+              copyBtn.classList.add('copied');
+              copyBtn.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              `;
+              showToast(`Copied: ${code}`);
+              setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = `
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                `;
+              }, 1800);
+            });
+          });
+
+          row.appendChild(idxSpan);
+          row.appendChild(textSpan);
+          row.appendChild(copyBtn);
+          resultsBox.appendChild(row);
+        });
+      }
+
+      // --- Toast Feedback ---
+      function showToast(msg) {
+        toastMessage.textContent = msg;
+        toast.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2200);
+      }
+
+      // --- Selection & Clipboard ---
+      btnSelectAll.addEventListener('click', () => {
+        if (currentCodes.length === 0) return;
+        const range = document.createRange();
+        range.selectNodeContents(resultsBox);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        showToast('All codes highlighted! You can drag or copy.');
+      });
+
+      btnCopyAll.addEventListener('click', () => {
+        if (currentCodes.length === 0) {
+          showError('Generate codes first before copying.');
+          return;
+        }
+        const text = currentCodes.join('\n');
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`Copied all ${currentCodes.length} codes!`);
+        });
+      });
+
+      // --- Export Menu & Actions ---
+      btnExportMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exportDropdown.classList.toggle('active');
+      });
+
+      document.addEventListener('click', () => {
+        exportDropdown.classList.remove('active');
+      });
+
+      function triggerDownload(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      exportTxt.addEventListener('click', () => {
+        if (currentCodes.length === 0) return;
+        triggerDownload(currentCodes.join('\n'), 'promo_codes.txt', 'text/plain;charset=utf-8');
+        showToast('Exported promo_codes.txt');
+      });
+
+      exportCsv.addEventListener('click', () => {
+        if (currentCodes.length === 0) return;
+        let csv = 'Index,Promo Code\n';
+        currentCodes.forEach((code, i) => {
+          csv += `${i + 1},"${code.replace(/"/g, '""')}"\n`;
+        });
+        triggerDownload(csv, 'promo_codes.csv', 'text/csv;charset=utf-8');
+        showToast('Exported promo_codes.csv');
+      });
+
+      exportTsv.addEventListener('click', () => {
+        if (currentCodes.length === 0) return;
+        let tsv = 'Index\tPromo Code\n';
+        currentCodes.forEach((code, i) => {
+          tsv += `${i + 1}\t${code}\n`;
+        });
+        triggerDownload(tsv, 'promo_codes.tsv', 'text/tab-separated-values;charset=utf-8');
+        showToast('Exported promo_codes.tsv');
+      });
+
+      exportSheets.addEventListener('click', () => {
+        if (currentCodes.length === 0) return;
+        // Excel/Google Sheets HTML table format
+        let htmlTable = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+        <head><meta charset="utf-8"></head><body><table>
+        <thead><tr><th>Index</th><th>Promo Code</th><th>Created At</th></tr></thead><tbody>`;
+        const time = new Date().toISOString();
+        currentCodes.forEach((code, i) => {
+          htmlTable += `<tr><td>${i + 1}</td><td>${code}</td><td>${time}</td></tr>`;
+        });
+        htmlTable += `</tbody></table></body></html>`;
+        triggerDownload(htmlTable, 'promo_codes.xls', 'application/vnd.ms-excel;charset=utf-8');
+        showToast('Exported Google Sheets / Excel compatible file');
+      });
+
+      exportPdf.addEventListener('click', () => {
+        if (currentCodes.length === 0) return;
+        window.print();
+      });
+
+      // --- Init Event ---
+      btnGenerate.addEventListener('click', generatePromoCodes);
+
+    })();
+  </script>
+</body>
+</html>

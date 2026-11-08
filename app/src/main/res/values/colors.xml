@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_main">#1E1E24</color>
+    <color name="bg_card">#24252A</color>
+    <color name="accent_teal">#00D2D3</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
